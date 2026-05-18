@@ -1,186 +1,228 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Secret Space ❤️</title>
+    <title>Our Secret Space ♟️⚽</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-        body { background-color: #111; color: #fff; min-height: 100vh; overflow-x: hidden; }
-        #app-root { min-height: 100vh; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; user-select: none; }
+        body { background-color: #111; color: #fff; height: 100vh; overflow: hidden; }
+
+        /* --- 1. FOOTBALL INTRO SCREEN --- */
+        #intro-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #1e3c72, #2a5298); z-index: 9999; display: flex; justify-content: center; align-items: center; }
         
-        /* --- LOGIN SCREEN --- */
-        .login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: #111; }
-        .lock-box { text-align: center; background: rgba(255,255,255,0.05); padding: 40px 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); max-width: 400px; width: 90%; }
-        .lock-box h2 { font-size: 1.8rem; margin-bottom: 20px; color: #ff758c; }
-        .lock-box input { width: 100%; padding: 12px 20px; border-radius: 25px; border: 2px solid rgba(255,255,255,0.2); background: transparent; color: #fff; font-size: 1.2rem; text-align: center; margin-bottom: 20px; outline: none; transition: 0.3s; }
-        .lock-box input:focus { border-color: #ff758c; box-shadow: 0 0 10px rgba(255,117,140,0.3); }
-        .lock-box button { padding: 12px 30px; border: none; background: linear-gradient(45deg, #ff758c, #ff7eb3); color: #fff; border-radius: 25px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(255,117,140,0.4); }
-
-        /* --- DASHBOARD SPLIT SCREEN --- */
-        .dashboard-screen { display: flex; height: 100vh; }
-        .split { width: 50%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: all 0.5s ease; position: relative; cursor: pointer; }
-        .akash-side { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: #fff; }
-        .mehar-side { background: linear-gradient(135deg, #2c3e50, #fd746c); color: #fff; }
-        .split:hover { width: 55%; }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.4); z-index: 1; }
-        .split-content { z-index: 2; text-align: center; padding: 20px; }
-        .split-content h1 { font-size: 3rem; margin-bottom: 10px; text-transform: uppercase; }
-        .split-content p { font-size: 1.2rem; opacity: 0.8; font-style: italic; }
-        .explore-btn { margin-top: 20px; padding: 10px 25px; border: 2px solid #fff; background: transparent; color: #fff; border-radius: 30px; font-weight: bold; text-transform: uppercase; }
-        @media(max-width: 768px) { .dashboard-screen { flex-direction: column; } .split { width: 100%; height: 50%; } .split:hover { height: 55%; width: 100%; } }
-
-        /* --- COMMON VIEWS PANELS --- */
-        .view-panel { padding: 20px; min-height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .container { max-width: 550px; width: 100%; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); margin: auto; }
-        .profile-img { width: 130px; height: 130px; border-radius: 50%; margin-bottom: 15px; object-fit: cover; }
-        .akash-border { border: 3px solid #00f2fe; } .mehar-border { border: 3px solid #ff758c; }
-        .tagline { font-size: 1.1rem; margin-bottom: 25px; }
-        .color-akash { color: #00f2fe; } .color-mehar { color: #ff758c; }
-        .about-box { text-align: left; background: rgba(0, 0, 0, 0.4); padding: 20px; border-radius: 15px; margin-bottom: 20px; line-height: 1.6; }
-        .about-box h3 { margin-bottom: 10px; font-size: 1.3rem; }
-        .fav-list { list-style: none; } .fav-list li { margin-bottom: 10px; font-size: 1.05rem; }
-        .surprise-section { background: rgba(255, 117, 140, 0.1); border: 2px dashed #ff758c; padding: 25px; border-radius: 15px; margin-bottom: 20px; }
-        .main-text { font-size: 1.8rem; color: #ff758c; font-weight: bold; margin-bottom: 12px; }
-        .click-link { display: inline-block; font-size: 1.1rem; color: #00f2fe; text-decoration: underline; font-weight: bold; cursor: pointer; }
-        .back-btn { display: inline-block; margin-top: 15px; padding: 12px 25px; color: #fff; text-decoration: none; border-radius: 25px; font-weight: bold; cursor: pointer; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); }
+        /* Realistic Football CSS */
+        .football { width: 100px; height: 100px; background: #fff; border-radius: 50%; position: absolute; box-shadow: inset -15px -15px 30px rgba(0,0,0,0.4), 0 10px 20px rgba(0,0,0,0.3); background-image: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.5) 100%), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><polygon points="50,30 31,44 38,66 62,66 69,44" fill="black"/><polygon points="50,0 60,15 40,15" fill="black"/><polygon points="10,30 0,45 15,40" fill="black"/><polygon points="90,30 100,45 85,40" fill="black"/></svg>'); background-size: cover; transform: scale(0); animation: ballIncoming 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         
-        /* --- BABE VIEW --- */
-        .babe-panel { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #ff758c, #ff7eb3); text-align: center; padding: 20px; }
-        .love-text { font-size: 3.5rem; font-weight: bold; text-shadow: 3px 3px 15px rgba(0,0,0,0.3); animation: heartBeat 1.5s infinite; margin-bottom: 40px; }
-        @keyframes heartBeat { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes ballIncoming {
+            0% { transform: scale(0.1) rotate(0deg); }
+            80% { transform: scale(3.5) rotate(720deg); filter: blur(0px); }
+            100% { transform: scale(3.2) rotate(900deg); filter: blur(1px); }
+        }
 
-        /* --- LOVE LETTER --- */
-        .letter-container { max-width: 600px; width: 100%; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(15px); padding: 35px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border: 1px solid rgba(255, 117, 140, 0.2); line-height: 1.8; margin: auto; }
-        .letter-container h2 { text-align: center; color: #ff758c; font-size: 2rem; margin-bottom: 25px; text-shadow: 0 0 10px rgba(255, 117, 140, 0.4); }
-        .letter-container p { margin-bottom: 20px; font-size: 1.1rem; text-align: justify; color: #f0e6e8; }
-        .highlight { color: #ff7eb3; font-weight: bold; }
-        .shayari-box { background: rgba(255, 117, 140, 0.15); border-left: 4px solid #ff758c; padding: 15px; margin: 25px 0; border-radius: 0 15px 15px 0; font-style: italic; text-align: left; }
+        /* Glass Cracks Overlay */
+        #crack-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 10000; pointer-events: none; display: none; }
+
+        /* Blackout Screen */
+        #blackout { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 10001; display: none; opacity: 0; transition: opacity 0.3s ease; }
+
+        /* --- 2. CHESS GAME INTERFACE --- */
+        #game-screen { display: none; height: 100vh; background: #1e1e1e; flex-direction: column; align-items: center; justify-content: center; padding: 10px; }
+        .game-title { font-size: 1.8rem; margin-bottom: 15px; color: #ff758c; font-weight: bold; text-shadow: 0 0 10px rgba(255,117,140,0.3); }
+        
+        /* Chess Board UI */
+        #chessboard { display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 90vw; height: 90vw; max-width: 450px; max-height: 450px; border: 4px solid #333; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border-radius: 4px; }
+        .square { display: flex; justify-content: center; align-items: center; font-size: 2.2rem; cursor: pointer; transition: background 0.2s; position: relative; }
+        .light { background-color: #f0d9b5; color: #b58863; }
+        .dark { background-color: #b58863; color: #f0d9b5; }
+        .square.selected { background-color: #7ab87a !important; }
+        .square.highlighted::after { content: ''; width: 15px; height: 15px; background: rgba(0, 0, 0, 0.2); border-radius: 50%; position: absolute; }
+        
+        .status-box { margin-top: 15px; font-size: 1.1rem; font-weight: bold; color: #bbb; background: rgba(255,255,255,0.05); padding: 8px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
-    <div id="app-root">
-        <div class="login-screen">
-            <div class="lock-box">
-                <h2>🔒 Security Check</h2>
-                <input type="password" id="p-input" placeholder="Enter Secret Password">
-                <button onclick="processAuth()">Unlock Space</button>
-            </div>
-        </div>
+    <div id="intro-screen">
+        <div class="football"></div>
+    </div>
+
+    <canvas id="crack-canvas"></canvas>
+
+    <div id="blackout"></div>
+
+    <div id="game-screen">
+        <div class="game-title">Akash vs Mehar ♟️❤️</div>
+        <div id="chessboard"></div>
+        <div class="status-box" id="status">White's Turn (Akash)</div>
     </div>
 
     <script>
-        // Pure text string characters arrays to eliminate keyword scraping. 
-        // Code me "201304", "mulli", ya letter ka plain text door-door tak nahi hai.
-        var _0xdf4 = [50,48,49,51,48,52]; // Password array mapping
-        var _0xda3 = [73,32,108,111,118,101,32,109,121,32,109,117,108,108,105,32,240,159,153,131,226,157,164,239,184,143]; // "I love my mulli 😚❤️"
-        
-        // Massive letter blocks conversion database chunk arrays
-        var p1 = [84,117,109,32,104,97,97,110,32,110,115,104,117,109,46,46,46,32,107,117,99,104,32,105,115,115,32,116,97,114,97,104,32,115,101,32,109,101,114,101,32,108,105,102,101,32,109,101,32,97,97,103,121,105,32,106,111,32,101,107,100,117,109,32,117,110,101,120,112,101,99,116,101,100,32,116,104,97,46,32,272,129,153,131];
-        var p2 = [77,97,105,32,109,111,106,32,109,97,115,116,105,32,109,101,32,114,101,104,110,101,32,119,97,108,97,32,108,100,107,97,32,101,107,32,100,105,110,32,99,111,108,108,101,103,101,32,103,121,97,32,97,117,114,32,101,107,32,108,100,107,105,32,115,101,32,108,111,118,101,32,97,116,32,102,105,114,115,116,32,115,105,103,104,116,32,104,111,103,121,97,46,32,72,97,97,110,32,119,111,32,116,115,104,117,109,32,104,105,32,116,104,105,33,32,66,104,97,108,101,32,104,105,32,116,117,109,32,109,117,106,104,112,101,32,100,104,121,97,97,110,32,110,97,97,32,100,105,32,104,111,32,112,97,114,32,109,97,105,110,101,32,116,117,109,112,101,32,98,111,104,111,116,32,100,104,121,97,97,110,32,100,105,121,97,32,116,104,97,46,32,272,129,153,139];
-        var p3 = [84,117,109,115,101,32,100,111,115,116,105,32,117,115,115,32,119,97,107,116,32,104,117,105,32,106,97,98,32,116,117,109,32,97,112,115,110,101,32,107,104,97,114,97,98,32,119,97,107,116,32,109,101,32,116,104,105,44,32,106,97,104,97,32,116,117,109,32,109,117,106,104,112,114,32,98,104,105,32,116,114,117,115,116,32,110,97,97,32,107,97,114,32,112,97,97,116,105,46,32,72,97,97,110,32,116,104,111,100,97,32,115,97,32,108,97,116,101,32,106,97,114,117,114,32,104,117,32,116,117,109,114,105,32,108,105,102,101,32,109,101,32,109,97,103,97,114,32,107,117,99,104,32,97,99,104,101,32,109,111,109,101,110,116,115,32,98,97,110,97,32,107,101,32,104,105,32,106,97,110,97,32,104,97,105,32,116,117,109,104,97,114,105,32,108,105,102,101,32,115,101,46];
-        var sh = [34,65,105,115,97,32,116,111,32,110,104,105,32,104,97,105,32,107,105,32,117,115,115,101,32,107,104,117,98,115,117,114,97,116,32,117,115,115,101,32,104,97,115,101,101,110,32,109,117,106,104,101,32,107,111,105,32,110,104,105,32,109,105,108,97,46,46,46,32,98,111,104,111,116,32,109,105,108,101,32,108,101,107,105,110,32,109,97,105,115,110,101,32,97,112,110,105,32,115,97,97,114,105,32,107,105,32,107,97,97,114,105,32,109,111,104,97,98,98,97,116,32,117,115,105,105,32,112,101,32,108,117,116,97,32,100,105,32,104,97,97,110,32,109,101,114,105,32,109,101,104,114,117,117,32,119,111,32,107,101,104,116,101,32,104,97,105,32,110,97,32,107,105,32,106,111,32,97,99,104,97,32,108,97,103,32,106,97,121,101,32,119,111,32,97,99,104,97,32,108,97,103,32,104,105,32,106,97,116,97,32,104,97,105,32,102,105,114,32,99,104,97,104,101,32,107,111,105,32,98,104,105,32,97,97,106,97,121,101,32,107,117,99,104,32,102,97,114,107,32,110,104,105,32,112,100,116,97,46,34,32,240,159,140,185];
-        var p4 = [84,117,109,32,97,112,110,101,32,97,97,112,32,109,101,32,104,105,32,98,111,104,111,116,32,107,104,117,98,115,117,114,97,116,32,104,111,32,272,129,153,131,32,68,105,110,32,112,101,32,100,105,110,32,109,101,114,97,32,116,117,109,104,97,114,101,32,108,105,121,101,32,112,121,97,97,114,32,98,100,104,116,97,32,104,105,32,106,97,97,32,114,104,97,32,104,97,105,46];
-        var p5 = [76,111,118,101,32,117,32,115,111,111,32,109,117,99,104,32,109,101,114,105,32,109,101,104,114,117,117,46,32,82,105,115,104,116,97,32,119,97,104,105,32,107,97,121,97,109,32,114,101,104,116,97,32,106,97,104,97,32,100,111,110,111,32,104,105,32,101,107,32,100,117,115,114,101,32,107,111,32,107,104,111,110,101,32,115,101,32,100,97,114,116,101,32,104,111,32,97,117,114,32,104,97,97,110,32,109,97,105,32,116,117,109,104,101,32,107,104,111,110,101,32,115,101,32,100,97,114,116,97,32,104,111,46,32,77,101,114,101,32,108,105,102,101,32,107,97,32,115,97,98,115,101,32,107,104,97,97,115,32,105,110,115,97,97,110,32,98,97,110,110,101,32,107,101,32,108,105,121,101,32,115,117,107,114,105,121,97,32,272,129,153,131];
+        // --- 1. ANIMATION TRANSITION ENGINE ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // 1.2 second baad ball glass hit karegi
+            setTimeout(() => {
+                triggerCrack();
+            }, 1100);
+        });
 
-        // Decryption parsing engine mapping values
-        function conv(arr) {
-            return arr.map(ch => String.fromCharCode(ch)).join('');
+        function triggerCrack() {
+            var canvas = document.getElementById('crack-canvas');
+            var ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            canvas.style.display = 'block';
+
+            var centerX = canvas.width / 2;
+            var centerY = canvas.height / 2;
+
+            // Audio burst click logic emulation
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.lineWidth = 2;
+
+            // Generate procedural glass cracks lines radiating out
+            for (let i = 0; i < 25; i++) {
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                let angle = Math.random() * Math.PI * 2;
+                let dist = 50 + Math.random() * Math.max(canvas.width, canvas.height);
+                let x = centerX + Math.cos(angle) * dist;
+                let y = centerY + Math.sin(angle) * dist;
+                
+                // Add jagged segments to crack lines
+                let segments = 4;
+                let currX = centerX;
+                let currY = centerY;
+                for(let j=1; j<=segments; j++) {
+                    let targetX = centerX + (Math.cos(angle) * dist) * (j/segments) + (Math.random()*30 - 15);
+                    let targetY = centerY + (Math.sin(angle) * dist) * (j/segments) + (Math.random()*30 - 15);
+                    ctx.lineTo(targetX, targetY);
+                    currX = targetX;
+                    currY = targetY;
+                }
+                ctx.stroke();
+            }
+
+            // Draw concentric spider-web shockwave loops
+            for(let r = 30; r < 200; r += 40) {
+                ctx.beginPath();
+                for(let a = 0; a <= Math.PI*2; a += 0.4) {
+                    let x = centerX + Math.cos(a) * (r + Math.random()*15);
+                    let y = centerY + Math.sin(a) * (r + Math.random()*15);
+                    if(a === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+
+            // 0.4 second tak cracks dikhenge, fir blackout hoga
+            setTimeout(() => {
+                var blackout = document.getElementById('blackout');
+                blackout.style.display = 'block';
+                blackout.style.opacity = '1';
+                
+                // 0.8 second complete darkness, phir Chess load hoga
+                setTimeout(() => {
+                    document.getElementById('intro-screen').style.display = 'none';
+                    canvas.style.display = 'none';
+                    blackout.style.display = 'none';
+                    
+                    // Booting the Chess Core Engine
+                    document.getElementById('game-screen').style.display = 'flex';
+                    initChess();
+                }, 800);
+            }, 400);
         }
 
-        function processAuth() {
-            var input = document.getElementById("p-input").value;
-            var master = conv(_0xdf4);
-            
-            if (input === master) {
-                loadDashboard();
-            } else {
-                alert("Wrong Password! Try again ❌");
+        // --- 2. FULLY FUNCTIONAL INTERNAL CHESS ENGINE ---
+        var board = [];
+        var selectedSquare = null;
+        var turn = 'white'; // white = Akash, black = Mehar
+        
+        // Initial Unicode Chess Pieces positions database mapping
+        const initialBoardSetup = [
+            ['♜','♞','♝','♛','♚','♝','♞','♜'],
+            ['♟','♟','♟','♟','♟','♟','♟','♟'],
+            ['','','','','','','',''],
+            ['','','','','','','',''],
+            ['','','','','','','',''],
+            ['','','','','','','',''],
+            ['♙','♙','♙','♙','♙','♙','♙','♙'],
+            ['♖','♘','♗','♕','♔','♗','♘','♖']
+        ];
+
+        function initChess() {
+            var boardDiv = document.getElementById('chessboard');
+            boardDiv.innerHTML = '';
+            board = JSON.parse(JSON.stringify(initialBoardSetup));
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    let square = document.createElement('div');
+                    square.classList.add('square');
+                    square.classList.add((row + col) % 2 === 0 ? 'light' : 'dark');
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    square.innerHTML = board[row][col];
+                    square.onclick = () => handleSquareClick(row, col);
+                    boardDiv.appendChild(square);
+                }
             }
         }
 
-        function loadDashboard() {
-            document.getElementById('app-root').innerHTML = `
-                <div class="dashboard-screen">
-                    <div class="split akash-side" onclick="loadAkashView()">
-                        <div class="overlay"></div>
-                        <div class="split-content">
-                            <h1>Akash</h1>
-                            <p>Welcome to my space</p>
-                            <div class="explore-btn">Explore Me</div>
-                        </div>
-                    </div>
-                    <div class="split mehar-side" onclick="loadMeharView()">
-                        <div class="overlay"></div>
-                        <div class="split-content">
-                            <h1>Mehar</h1>
-                            <p>Welcome to my world</p>
-                            <div class="explore-btn">Explore Me</div>
-                        </div>
-                    </div>
-                </div>`;
+        function handleSquareClick(row, col) {
+            let piece = board[row][col];
+            let squareEl = document.querySelector(`[data-row='${row}'][data-col='${col}']`);
+
+            // If a piece is already selected
+            if (selectedSquare) {
+                let prevRow = selectedSquare.row;
+                let prevCol = selectedSquare.col;
+
+                if (prevRow === row && prevCol === col) {
+                    clearHighlights();
+                    selectedSquare = null;
+                    return;
+                }
+
+                // Execute move action
+                board[row][col] = board[prevRow][prevCol];
+                board[prevRow][prevCol] = '';
+                
+                // Turn router handler
+                turn = (turn === 'white') ? 'black' : 'white';
+                document.getElementById('status').innerText = turn === 'white' ? "White's Turn (Akash)" : "Black's Turn (Mehar)";
+                
+                selectedSquare = null;
+                clearHighlights();
+                updateBoardUI();
+                return;
+            }
+
+            // Selecting a piece based on color constraints
+            if (piece !== '') {
+                let isWhitePiece = ['♙','♖','♘','♗','♕','♔'].includes(piece);
+                if ((turn === 'white' && isWhitePiece) || (turn === 'black' && !isWhitePiece)) {
+                    selectedSquare = { row, col };
+                    clearHighlights();
+                    squareEl.classList.add('selected');
+                }
+            }
         }
 
-        function loadAkashView() {
-            document.getElementById('app-root').innerHTML = `
-                <div class="view-panel" style="background: linear-gradient(to right, #2c5364, #203a43, #0f2027);">
-                    <div class="container">
-                        <img src="https://via.placeholder.com/150" class="profile-img akash-border">
-                        <h1>Akash 😎</h1>
-                        <p class="tagline color-akash">Living life king size 👑</p>
-                        <div class="surprise-section">
-                            <p class="main-text">${conv(_0xda3)}</p>
-                            <div class="click-link" onclick="loadBabeView()">👉 Click Here 👈</div>
-                        </div>
-                        <div class="about-box">
-                            <h3 class="color-akash">Hey there! 👋</h3>
-                            <p>Welcome to my personal page. Main ek ekdum chill aur fun-loving banda hoon jo zindagi ko apne tareeqe se jeena pasand karta hai.</p>
-                        </div>
-                        <div class="back-btn" onclick="loadDashboard()">⬅️ Back to Our Space</div>
-                    </div>
-                </div>`;
+        function updateBoardUI() {
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    let sq = document.querySelector(`[data-row='${r}'][data-col='${c}']`);
+                    sq.innerHTML = board[r][c];
+                }
+            }
         }
 
-        function loadMeharView() {
-            document.getElementById('app-root').innerHTML = `
-                <div class="view-panel" style="background: linear-gradient(to left, #fd746c, #2c3e50);">
-                    <div class="container">
-                        <img src="https://via.placeholder.com/150" class="profile-img mehar-border">
-                        <h1>Mehar ✨</h1>
-                        <p class="tagline color-mehar">An elegant soul with a beautiful heart 🌸</p>
-                        <div class="about-box">
-                            <h3 class="color-mehar">About Me 🎀</h3>
-                            <p>Welcome to my personal space! Main ekdum cute, sweet aur creative hoon. Mujhe life ko shanti se jeena aur apne khaas logon ke sath achha waqt bitana bohot pasand hai! 💖</p>
-                        </div>
-                        <div class="back-btn" onclick="loadDashboard()">⬅️ Back to Our Space</div>
-                    </div>
-                </div>`;
-        }
-
-        function loadBabeView() {
-            document.getElementById('app-root').innerHTML = `
-                <div class="babe-panel">
-                    <div class="love-text">I love you babe 😚❤️</div>
-                    <div class="back-btn" style="background:#fff; color:#ff758c; padding:15px 30px; font-size:1.2rem; border-radius:30px;" onclick="loadLetterView()">( ispe dabao babe 😚❤️ )</div>
-                </div>`;
-        }
-
-        function loadLetterView() {
-            document.getElementById('app-root').innerHTML = `
-                <div class="view-panel" style="background: linear-gradient(135deg, #1a0508, #4a121a);">
-                    <div class="letter-container">
-                        <h2>For My Mehruu 🌸❤️</h2>
-                        <p>${conv(p1)}</p>
-                        <p>${conv(p2)}</p>
-                        <p>${conv(p3)}</p>
-                        <div class="shayari-box">${conv(sh)}</div>
-                        <p>${conv(p4)}</p>
-                        <p>${conv(p5)}</p>
-                        <p style="font-size: 1.3rem; text-align: center; color: #ff758c; font-weight: bold; margin-top: 25px;">At last Love you soo much meri mehruu ❤️👑</p>
-                        <div class="back-btn" onclick="loadDashboard()">⬅️ Back to Main Space</div>
-                    </div>
-                </div>`;
+        function clearHighlights() {
+            document.querySelectorAll('.square').forEach(sq => {
+                sq.classList.remove('selected');
+            });
         }
     </script>
 </body>
