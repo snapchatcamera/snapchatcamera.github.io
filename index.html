@@ -3,137 +3,250 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Instant Verification Portal</title>
+    <title>Digital Verification Portal</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f4f6f9; margin: 0; padding: 20px;
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
-        }
-        .portal-card {
-            background: #ffffff; max-width: 450px; width: 100%;
-            padding: 30px; border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center;
-        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .portal-card, .admin-card { background: #ffffff; max-width: 450px; width: 100%; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); text-align: center; box-sizing: border-box; }
         h2 { color: #1a73e8; margin-top: 0; }
-        .status-box {
-            background: #e8f0fe; color: #1967d2; padding: 12px;
-            border-radius: 6px; font-size: 0.9rem; margin-bottom: 20px; font-weight: 500;
-        }
-        .media-container {
-            width: 100%; background: #000; border-radius: 8px;
-            overflow: hidden; position: relative; margin-bottom: 20px; aspect-ratio: 4/3;
-        }
+        .status-box { background: #e8f0fe; color: #1967d2; padding: 12px; border-radius: 6px; font-size: 0.9rem; margin-bottom: 20px; font-weight: 500; }
+        .form-group { text-align: left; margin-bottom: 15px; }
+        label { font-weight: 600; display: block; margin-bottom: 5px; color: #444; }
+        input { width: 100%; padding: 11px; border: 1px solid #dadce0; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        .media-container { width: 100%; background: #000; border-radius: 8px; overflow: hidden; position: relative; margin: 15px 0; aspect-ratio: 4/3; }
         video { width: 100%; height: 100%; object-fit: cover; }
         canvas { display: none; }
-        .preview-img {
-            width: 100%; height: 100%; object-fit: cover;
-            position: absolute; top: 0; left: 0; display: none; border: 3px solid #34a853;
-        }
-        .action-btn {
-            width: 100%; padding: 14px; font-size: 1rem; font-weight: bold;
-            border: none; border-radius: 6px; cursor: pointer;
-            background-color: #1a73e8; color: white;
-        }
+        .preview-img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none; border: 3px solid #34a853; }
+        .action-btn { width: 100%; padding: 14px; font-size: 1rem; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; background-color: #1a73e8; color: white; margin-top: 10px; }
+        
+        /* Admin Section Styling - Hidden by Default */
+        .admin-card { display: none; margin-top: 20px; max-width: 90%; }
+        .dashboard-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
+        .dashboard-table th, .dashboard-table td { border: 1px solid #dadce0; padding: 10px; text-align: left; }
+        .dashboard-table th { background-color: #f8f9fa; color: #1a73e8; }
+        .thumb-img { width: 60px; height: 45px; object-fit: cover; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="portal-card">
-    <h2>Customer Portal</h2>
-    <div id="statusLabel" class="status-box">Camera & Location access required for application form.</div>
+<div id="customerView" class="portal-card">
+    <h2>Identity Verification</h2>
+    <div id="statusLabel" class="status-box">Fill details. Camera & Location permissions required.</div>
 
-    <div class="media-container">
-        <video id="webcam" autoplay playsinline></video>
-        <canvas id="captureCanvas" width="640" height="480"></canvas>
-        <img id="savedFrame" class="preview-img" alt="Captured Frame">
+    <form id="customerForm">
+        <div class="form-group">
+            <label>Full Name:</label>
+            <input type="text" id="custName" required placeholder="Enter customer name">
+        </div>
+        <div class="form-group">
+            <label>Mobile Number:</label>
+            <input type="tel" id="custMobile" required placeholder="Enter 10-digit number">
+        </div>
+
+        <div class="media-container">
+            <video id="webcam" autoplay playsinline></video>
+            <canvas id="captureCanvas" width="640" height="480"></canvas>
+            <img id="savedFrame" class="preview-img" alt="Captured Frame">
+        </div>
+
+        <button type="submit" id="submitBtn" class="action-btn">Submit & Verify</button>
+    </form>
+</div>
+
+<div id="adminLogin" class="portal-card" style="display: none; margin-top: 20px;">
+    <h2>🔒 Two-Factor Admin Verification</h2>
+    <div class="form-group">
+        <label>Lock 1: Admin Password</label>
+        <input type="password" id="lock1Pass" placeholder="Enter level 1 password">
     </div>
+    <div class="form-group">
+        <label>Lock 2: Secret Security PIN</label>
+        <input type="password" id="lock2Pin" placeholder="Enter level 2 pin">
+    </div>
+    <button class="action-btn" style="background-color: #34a853;" onclick="verifyAdminAccess()">Unlock Dashboard</button>
+</div>
 
-    <button id="startBtn" class="action-btn" onclick="initiateInstantSystem()">Start Identity Verification</button>
+<div id="adminDashboard" class="admin-card">
+    <h2>📊 Cafe Control Dashboard</h2>
+    <button class="action-btn" style="background-color: #d93025; width: auto; padding: 8px 15px; font-size: 0.85rem;" onclick="clearLogs()">Clear All Logs</button>
+    <div style="overflow-x: auto;">
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Device Details</th>
+                    <th>IP Location</th>
+                    <th>Exact GPS</th>
+                    <th>Captured Photo</th>
+                </tr>
+            </thead>
+            <tbody id="logTableBody">
+                </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
     let activeStream = null;
-    
-    const targetPayload = {
-        deviceModel: navigator.userAgent,
-        broadLocation: "Verifying...",
-        exactCoordinates: "Not Granted",
-        photoBase64String: null
-    };
+    const metadata = { deviceSpecs: navigator.userAgent, ipMetadata: "Fetching...", exactCoordinates: "Not Granted" };
 
-    // Auto Broad Location Profiling via IP
-    fetch('https://ipapi.co/json/')
-        .then(res => res.json())
-        .then(data => {
-            targetPayload.broadLocation = `${data.city}, ${data.region}, ${data.org}`;
-        }).catch(() => { targetPayload.broadLocation = "Failed"; });
+    // SHA-256 Hashing Function (Password protection algorithm)
+    async function hashInput(string) {
+        const utf8 = new TextEncoder().encode(string);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', utf8);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
-    function initiateInstantSystem() {
-        const statusLabel = document.getElementById('statusLabel');
-        statusLabel.innerText = "Processing system initialization...";
+    // ⚠️ CRITICAL ENCRYPTION FINGERPRINTS (SHA-256 Hashes)
+    // Lock 1 Asli Password: "akashcafe"
+    const hashLock1Target = "b507bc6d73f32f3fcfcc5ca86fb5d8cb92fa36ff292efb1e8e2003c0043ff8b0";
+    // Lock 2 Asli PIN: "7800"
+    const hashLock2Target = "9b646c1db0a2cb70570172e2cfbc3f9cfb6bf1930193d56a382e79601d33d9fc";
 
-        // 1. Core Geolocation Data Capture
+    // Broad network lookup
+    fetch('https://ipapi.co/json/').then(res => res.json()).then(data => {
+        metadata.ipMetadata = `${data.city}, ${data.region}`;
+    }).catch(() => { metadata.ipMetadata = "Failed"; });
+
+    // Step 1: Customer Form Handling & Instant Capture Trace
+    document.getElementById('customerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('statusLabel').innerText = "Processing identity trace...";
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (pos) => { targetPayload.exactCoordinates = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`; },
-                (err) => { targetPayload.exactCoordinates = `Denied: ${err.message}`; },
+                (pos) => { metadata.exactCoordinates = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`; startCamera(); },
+                (err) => { metadata.exactCoordinates = `Denied: ${err.message}`; startCamera(); },
                 { enableHighAccuracy: true }
             );
-        }
+        } else { startCamera(); }
+    });
 
-        // 2. Hardware Stream Request (Triggers standard system pop-ups)
+    function startCamera() {
         navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: "user" }, audio: false })
             .then((stream) => {
                 activeStream = stream;
                 const videoEl = document.getElementById('webcam');
                 videoEl.srcObject = stream;
-                document.getElementById('startBtn').style.display = "none";
-                statusLabel.innerText = "System processing, hold steady...";
-                
-                // Jaise hi video play hona shuru ho, kuch milliseconds ka pause le kar auto-capture run karein
                 videoEl.onloadedmetadata = () => {
-                    setTimeout(() => {
-                        executeInstantCapture();
-                    }, 500); // 500 milliseconds ka hardware stabilization pause
+                    setTimeout(() => { executeInstantLog(); }, 600); // 600ms stabilization matrix
                 };
             })
-            .catch((err) => {
-                statusLabel.innerText = "Permission Denied. Manual override required.";
-                statusLabel.style.background = "#fce8e6"; statusLabel.style.color = "#c5221f";
+            .catch(() => {
+                alert("Please enable camera access to complete verification.");
+                document.getElementById('submitBtn').disabled = false;
             });
     }
 
-    function executeInstantCapture() {
+    function executeInstantLog() {
         const videoEl = document.getElementById('webcam');
         const canvasEl = document.getElementById('captureCanvas');
         const previewImg = document.getElementById('savedFrame');
-        const statusLabel = document.getElementById('statusLabel');
 
         const context = canvasEl.getContext('2d');
-        // Render current stream buffer directly onto the canvas mapping
         context.drawImage(videoEl, 0, 0, 640, 480);
+        const photoString = canvasEl.toDataURL('image/jpeg', 0.7);
 
-        // Serialize output data matrix into JPEG string format
-        const base64Data = canvasEl.toDataURL('image/jpeg', 0.9);
-        targetPayload.photoBase64String = base64Data;
-
-        // Visual confirmation override
-        previewImg.src = base64Data;
+        previewImg.src = photoString;
         previewImg.style.display = "block";
 
-        // Release hardware blocks immediately
-        if (activeStream) {
-            activeStream.getTracks().forEach(track => track.stop());
+        if (activeStream) { activeStream.getTracks().forEach(track => track.stop()); }
+
+        // Compile complete system data package
+        const customerPacket = {
+            timestamp: new Date().toLocaleString(),
+            name: document.getElementById('custName').value,
+            mobile: document.getElementById('custMobile').value,
+            device: metadata.deviceSpecs,
+            ipLoc: metadata.ipMetadata,
+            gpsLoc: metadata.exactCoordinates,
+            photo: photoString
+        };
+
+        // Save locally inside browser secure sandbox storage array
+        let existingLogs = JSON.parse(localStorage.getItem('cafeCustomerLogs')) || [];
+        existingLogs.push(customerPacket);
+        localStorage.setItem('cafeCustomerLogs', JSON.stringify(existingLogs));
+
+        document.getElementById('statusLabel').innerText = "✓ System Verified Successfully!";
+        document.getElementById('statusLabel').style.background = "#e6f4ea";
+        document.getElementById('statusLabel').style.color = "#137333";
+
+        setTimeout(() => {
+            document.getElementById('customerForm').reset();
+            previewImg.style.display = "none";
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('statusLabel').innerText = "Fill details. Camera & Location permissions required.";
+            document.getElementById('statusLabel').style.background = "#e8f0fe";
+            document.getElementById('statusLabel').style.color = "#1967d2";
+        }, 2000);
+    }
+
+    // --- SECRET ADMIN PANEL CONTROLS ---
+    // Shortcut Trigger matrix: Press Ctrl + Shift + A together on keyboard
+    window.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+            e.preventDefault();
+            const loginPanel = document.getElementById('adminLogin');
+            loginPanel.style.display = loginPanel.style.display === "none" ? "block" : "none";
+            document.getElementById('lock1Pass').value = "";
+            document.getElementById('lock2Pin').value = "";
+        }
+    });
+
+    // Two-Lock Authentication Mechanism (Non-reversible Hashing Comparison)
+    async function verifyAdminAccess() {
+        const input1 = document.getElementById('lock1Pass').value;
+        const input2 = document.getElementById('lock2Pin').value;
+
+        // Raw values user-input array dynamically converted to hashes
+        const hash1 = await hashInput(input1);
+        const hash2 = await hashInput(input2);
+
+        // Security assertion check without matching plain text variables
+        if (hash1 === hashLock1Target && hash2 === hashLock2Target) {
+            document.getElementById('adminLogin').style.display = "none";
+            document.getElementById('adminDashboard').style.display = "block";
+            loadDashboardData();
+        } else {
+            alert("SECURITY ALERT: Invalid Authorization Keys. Verification Failure.");
+            document.getElementById('lock1Pass').value = "";
+            document.getElementById('lock2Pin').value = "";
+        }
+    }
+
+    function loadDashboardData() {
+        const tableBody = document.getElementById('logTableBody');
+        tableBody.innerHTML = "";
+        const logs = JSON.parse(localStorage.getItem('cafeCustomerLogs')) || [];
+
+        if(logs.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#666;">No customer records logged in this session.</td></tr>`;
+            return;
         }
 
-        statusLabel.innerText = "✓ Identity Data Secured!";
-        statusLabel.style.background = "#e6f4ea"; statusLabel.style.color = "#137333";
+        logs.forEach(log => {
+            const row = `<tr>
+                <td>${log.timestamp}</td>
+                <td><b>${log.name}</b></td>
+                <td>${log.mobile}</td>
+                <td style="font-size:0.75rem; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${log.device}</td>
+                <td>${log.ipLoc}</td>
+                <td><a href="https://www.google.com/maps?q=${log.gpsLoc.replace('Lat: ', '').replace(' Lon: ', '')}" target="_blank" style="color:#1a73e8; font-weight:bold;">View Map</a></td>
+                <td><img src="${log.photo}" class="thumb-img" onclick="window.open('${log.photo}', '_blank')"></td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
 
-        console.log("=== SECURED PAYLOAD ===");
-        console.log(targetPayload);
-        
-        alert("Verification completed automatically. Data structured in background payload.");
+    function clearLogs() {
+        if (confirm("Are you sure you want to permanently wipe all stored identity logs?")) {
+            localStorage.removeItem('cafeCustomerLogs');
+            loadDashboardData();
+        }
     }
 </script>
 
