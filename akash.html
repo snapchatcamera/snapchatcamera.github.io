@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script>
-        var secureHash = "e2c347db1f855d081f9b3b89fa72b78b";
-        var inputPassword = prompt("Direct entry checked! Enter Secret Password to access this page:");
-        if (inputPassword !== null) {
-            var inputHash = CryptoJS.MD5(inputPassword).toString();
-            if (inputHash !== secureHash) {
-                alert("Wrong Password! Redirecting to home... ❌");
+        <script>
+        var password = prompt("Direct entry checked! Enter Secret Password:");
+        if (password !== null) {
+            if (btoa(password) !== "MjAxMzA0") {
+                alert("Wrong Password! ❌");
                 window.location.href = "index.html";
             }
         } else {
             window.location.href = "index.html";
         }
-    </script>
+        </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Akash's World 🌊</title>
